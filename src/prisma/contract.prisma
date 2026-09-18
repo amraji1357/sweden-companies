@@ -1,0 +1,72 @@
+// use prisma-8
+ model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  username  String?  @unique
+  name      String?
+  password  String
+  reviews   Review[]
+  ratings   Rating[]
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
+
+model Company {
+  id          Int               @id @default(autoincrement())
+  name        String
+  slug        String            @unique
+  description String?
+  website     String?
+  logoUrl     String?
+  city        String?
+  country     String            @default("Sweden")
+  reviews     Review[]
+  ratings     Rating[]
+  categories  CompanyCategory[]
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+}
+
+model Category {
+  id          Int               @id @default(autoincrement())
+  name        String            @unique
+  slug        String            @unique
+  companies   CompanyCategory[]
+  createdAt   TimestamptzString @default(now())
+}
+
+model CompanyCategory {
+  company     Company  @relation(fields: [companyId], references: [id])
+  companyId   Int
+  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+
+  @@id([companyId, categoryId])
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  title     String?
+  content   String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  company   Company  @relation(fields: [companyId], references: [id])
+  companyId Int
+  rating    Rating?
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
+
+model Rating {
+  id        Int      @id @default(autoincrement())
+  score     Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  company   Company  @relation(fields: [companyId], references: [id])
+  companyId Int
+  review    Review?  @relation(fields: [reviewId], references: [id])
+  reviewId  Int?     @unique
+  createdAt TimestamptzString @default(now())
+
+  @@unique([userId, companyId])
+}
