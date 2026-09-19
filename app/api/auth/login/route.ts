@@ -32,6 +32,7 @@ async function verifyPassword(
 
 export async function POST(request: Request) {
   try {
+await db.connect();
     const body = await request.json();
 
     const { email, password } = body;
